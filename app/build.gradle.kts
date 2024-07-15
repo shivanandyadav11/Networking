@@ -49,6 +49,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.retrofit2.kotlin.coroutines.adapter)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

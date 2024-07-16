@@ -1,22 +1,30 @@
 package online.example.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import kotlinx.coroutines.launch
 import online.example.networking.R
 import online.example.viewModel.MainViewModel
+import online.example.worker.MyWork
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel by lazy { MainViewModel() }
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,7 +35,31 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         viewModel.makeApiCall()
-        observeApiResult()
+        //observeApiResult()
+        handleWorkManager()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun handleWorkManager() {
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(false)
+            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+            .setRequiresDeviceIdle(false)
+            .build()
+
+        val request = OneTimeWorkRequestBuilder<MyWork>().setConstraints(constraints).build()
+
+        WorkManager.getInstance(this).enqueue(request)
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id).observe(this) {
+            if (it != null) {
+                if (it.state.isFinished) {
+                    val data = it.outputData
+                    val message = data.getString("key")
+                    Toast.makeText(this, "${it.state.name} $message", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun observeApiResult() {

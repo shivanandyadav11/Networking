@@ -5,8 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import online.example.model.User
 import online.example.networking.RetrofitInstance
@@ -18,6 +21,13 @@ class MainViewModel : ViewModel() {
 
     private val _userResult = MutableStateFlow<Result>(Result.NoState)
     val userResult: Flow<Result> get() = _userResult
+
+    init {
+        viewModelScope.launch {
+            coldFlow()
+            hotFlow()
+        }
+    }
 
     fun makeApiCall() = viewModelScope.launch(Dispatchers.IO) {
         makeAPICall()
@@ -42,6 +52,36 @@ class MainViewModel : ViewModel() {
         } catch (ex: Exception) {
             _userResult.emit(Result.Error(ex.message.toString()))
             _apiResult.postValue(Result.Error(ex.message.toString()))
+        }
+    }
+
+    private suspend fun coldFlow() {
+        val coldFlow = flow {
+            println("Flow started")
+            emit(1)
+            emit(2)
+            emit(3)
+        }
+        coldFlow.collect { value -> println("Flow started $value") }
+        coldFlow.collect { value -> println("Flow started $value") }
+        coldFlow.collect { value -> println("Flow started $value") }
+    }
+
+    private suspend fun hotFlow() {
+        val hotFlow = MutableSharedFlow<Int>()
+        coroutineScope {
+            launch {
+                hotFlow.collect { value -> println("Collector 1: $value") }
+            }
+            launch {
+                hotFlow.collect { value -> println("Collector 2: $value") }
+            }
+            launch {
+                println("Hot Flow started")
+                hotFlow.emit(1)
+                hotFlow.emit(2)
+                hotFlow.emit(3)
+            }
         }
     }
 

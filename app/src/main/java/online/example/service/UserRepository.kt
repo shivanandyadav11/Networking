@@ -1,10 +1,8 @@
-package online.example.networking
+package online.example.service
 
 import online.example.model.User
 import retrofit2.Response
-import retrofit2.http.GET
 
-interface ApiService {
-    @GET("users")
+interface UserRepository {
     suspend fun getUsers(): Response<List<User>>
 }

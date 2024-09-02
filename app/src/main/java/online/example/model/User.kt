@@ -1,4 +1,4 @@
-package online.example.networking
+package online.example.model
 
 data class User(
     val id: Int,

@@ -11,8 +11,18 @@ import online.example.networking.ApiService
 import retrofit2.Response
 import javax.inject.Inject
 
+/**
+ * Service class responsible for fetching user data from the API and mapping it to domain models.
+ *
+ * @property service The API service used to make network requests.
+ */
 class UserService @Inject constructor(private val service: ApiService) {
 
+    /**
+     * Fetches users from the API and transforms the response into a [UsersResponse].
+     *
+     * @return A Flow emitting a [UsersResponse] which can be either a success with user data or a failure with an error message.
+     */
     suspend fun getUsers(): Flow<UsersResponse> {
         return flow {
             val result = service.getUsers()
@@ -22,6 +32,12 @@ class UserService @Inject constructor(private val service: ApiService) {
         }
     }
 
+    /**
+     * Handles the API response and transforms it into a [UsersResponse].
+     *
+     * @param result The API response containing a list of users.
+     * @return A [UsersResponse] based on the API response.
+     */
     private fun handleResponse(result: Response<List<User>>): UsersResponse {
         return when {
             result.isSuccessful -> {
@@ -46,6 +62,11 @@ class UserService @Inject constructor(private val service: ApiService) {
         }
     }
 
+    /**
+     * Transforms a [User] object into a [UserDetail] object.
+     *
+     * @return A [UserDetail] object containing the user's name and email.
+     */
     private fun User.toUserDetail(): UserDetail {
         return UserDetail(
             name = this.name,
@@ -54,7 +75,21 @@ class UserService @Inject constructor(private val service: ApiService) {
     }
 }
 
+/**
+ * Sealed class representing the possible responses when fetching users.
+ */
 sealed class UsersResponse {
+    /**
+     * Represents a successful response containing user information.
+     *
+     * @property userInfo The user information retrieved.
+     */
     data class Success(val userInfo: UserInfo) : UsersResponse()
+
+    /**
+     * Represents a failure response containing an error message.
+     *
+     * @property message The error message describing the failure.
+     */
     data class Failure(val message: String) : UsersResponse()
 }

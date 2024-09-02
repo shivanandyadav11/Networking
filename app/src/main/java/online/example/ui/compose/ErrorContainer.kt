@@ -1,4 +1,4 @@
-package online.example.compose
+package online.example.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,10 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import online.example.handler.UserHandler
 
 @Composable
 fun ErrorContainer(
-    onRetry: () -> Unit,
+    userHandler: UserHandler,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -29,7 +30,7 @@ fun ErrorContainer(
             modifier = Modifier.padding(16.dp)
         )
         Button(
-            onClick = onRetry,
+            onClick = userHandler.retry,
             modifier = Modifier.padding(top = 8.dp)
         ) {
             Text("Retry")

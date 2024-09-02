@@ -2,6 +2,7 @@ package online.example.service
 
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import online.example.model.User
 import online.example.model.UserDetail
@@ -16,6 +17,8 @@ class UserService @Inject constructor(private val service: ApiService) {
         return flow {
             val result = service.getUsers()
             emit(handleResponse(result))
+        }.catch { error ->
+            emit(UsersResponse.Failure(error.message.orEmpty()))
         }
     }
 

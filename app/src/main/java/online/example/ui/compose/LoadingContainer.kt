@@ -1,4 +1,4 @@
-package online.example.compose
+package online.example.ui.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

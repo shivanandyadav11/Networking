@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -15,9 +17,13 @@ import online.example.viewModel.MainViewModel.UserViewState
 
 @Composable
 internal fun UserScreen(viewModel: MainViewModel = hiltViewModel()) {
+    val dataFetched = rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.fetchUserData()
+        if (!dataFetched.value) {
+            viewModel.fetchUserData()
+            dataFetched.value = true
+        }
     }
 
     val state = viewModel.userUiState.collectAsStateWithLifecycle().value

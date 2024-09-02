@@ -61,6 +61,9 @@ class MainViewModel @Inject constructor(private val userRepository: UserReposito
     fun retryFetchingUserData() = viewModelScope.launch {
         val currentState = userMutableUiState.value
         if (currentState is UserViewState.UserView) {
+            updateUiState(currentState.copy(
+                isLoading = true
+            ))
             when (val result = userRepository.getUsers().first()) {
                 is UsersResponse.Success -> {
                     updateUiState(
@@ -100,6 +103,7 @@ class MainViewModel @Inject constructor(private val userRepository: UserReposito
             val header: Header,
             val userInfo: UserInfo? = null,
             val errorState: UserErrorState,
+            val isLoading: Boolean = false
         ) : UserViewState()
     }
 }

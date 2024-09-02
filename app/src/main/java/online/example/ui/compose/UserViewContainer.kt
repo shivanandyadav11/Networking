@@ -21,7 +21,9 @@ fun UserViewContainer(
     state: UserViewState.UserView,
     userHandler: UserHandler,
 ) {
-    if (state.errorState.isErrorState) {
+    if (state.isLoading) {
+        LoadingContainer()
+    } else if (state.errorState.isErrorState) {
         ErrorContainer(userHandler = userHandler)
     } else {
         Column(

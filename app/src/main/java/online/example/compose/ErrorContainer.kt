@@ -15,17 +15,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ErrorContainer(
-    message: String,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = message,
+            text = "Something went wrong!!",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(16.dp)

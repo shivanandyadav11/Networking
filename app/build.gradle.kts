@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.retrofit2.kotlin.coroutines.adapter)
 
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
 
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
@@ -87,6 +88,8 @@ dependencies {
 
     // Optional - Integration with LiveData
     implementation(libs.androidx.runtime.livedata)
+
+    implementation(libs.kotlinx.collections.immutable)
 
 
     testImplementation(libs.junit)

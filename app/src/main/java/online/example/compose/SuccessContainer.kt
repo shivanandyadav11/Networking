@@ -1,30 +1,39 @@
 package online.example.compose
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import online.example.model.User
+import online.example.viewModel.MainViewModel.UserViewState
 
 @Composable
 fun SuccessContainer(
-    users: List<User>,
-    modifier: Modifier = Modifier
+    state: UserViewState.UserView
 ) {
-    Box(
-        modifier = modifier
+    Column(
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Text(
+            text = state.header.label,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
-            items(items = users) { user ->
+            items(items = state.userInfo.userDetailImmutableList) { user ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = user.name)
                 Spacer(modifier = Modifier.height(8.dp))

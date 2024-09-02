@@ -1,46 +1,67 @@
 package online.example.viewModel
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import online.example.model.Header
 import online.example.model.User
+import online.example.model.UserInfo
 import online.example.service.UserRepository
+import online.example.service.UsersResponse
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
-    private val _userResult = MutableStateFlow<Result>(Result.Loading)
-    val userResult: Flow<Result> get() = _userResult
+    private val userMutableUiState = MutableStateFlow<UserViewState>(UserViewState.Loading)
+    internal val userUiState: StateFlow<UserViewState> = userMutableUiState.asStateFlow()
 
-    fun makeApiCall() = viewModelScope.launch(Dispatchers.IO) {
-        makeAPICall()
+    suspend fun fetchUserData() = viewModelScope.launch {
+        val result = userRepository.getUsers().first()
+        updateUiState(
+            when (result) {
+                is UsersResponse.Success -> {
+                        UserViewState.UserView(
+                            header = Header(
+                                label = "Networking",
+                                description = "Networking desc"
+                            ),
+                            userInfo = result.userInfo
+                        )
+                }
+
+                is UsersResponse.Failure -> {
+                    UserViewState.Error
+                }
+            }
+        )
     }
 
-    private suspend fun makeAPICall() {
-        try {
-            val result = userRepository.getUsers()
-            if (result.isSuccessful) {
-                result.body()?.let { users ->
-                    _userResult.emit(Result.Success(users))
-                } ?: run {
-                    _userResult.emit(Result.Error("body is null"))
-                }
-            } else {
-                _userResult.emit(Result.Error("Failed to retrieve users"))
-            }
-        } catch (ex: Exception) {
-            _userResult.emit(Result.Error(ex.message.toString()))
-        }
+    private fun updateUiState(newState: UserViewState) {
+        userMutableUiState.update { newState }
     }
 
     sealed class Result {
         data object Loading : Result()
         data class Success(val users: List<User>) : Result()
         data class Error(val message: String) : Result()
+    }
+
+    @Stable
+    sealed class UserViewState {
+        data object Loading : UserViewState()
+        data class UserView(
+            val header: Header,
+            val userInfo: UserInfo,
+        ) : UserViewState()
+
+        data object Error : UserViewState()
     }
 }

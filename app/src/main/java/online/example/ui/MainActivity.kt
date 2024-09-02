@@ -16,17 +16,14 @@ import online.example.viewModel.MainViewModel.Result
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val userResult by viewModel.userResult.collectAsState(initial = Result.Loading)
             ComposeTheme {
-                UserScreen(userResult)
+                UserScreen()
             }
         }
-        viewModel.makeApiCall()
     }
 }

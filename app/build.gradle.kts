@@ -91,6 +91,14 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable)
 
+    // turbine
+    testImplementation(libs.turbine)
+
+    //mockk
+    testImplementation(libs.mockk)
+
+    // for coroutine handling
+    testImplementation(libs.kotlinx.coroutines.test)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

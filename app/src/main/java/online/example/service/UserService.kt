@@ -4,6 +4,8 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import online.example.model.Address
+import online.example.model.Geo
 import online.example.model.User
 import online.example.model.UserDetail
 import online.example.model.UserInfo
@@ -72,6 +74,38 @@ class UserService @Inject constructor(private val service: ApiService) {
             name = this.name,
             email = this.email
         )
+    }
+
+    /**
+     * Searches for users based on the provided query.
+     *
+     * @param string The search query.
+     * @return A Flow emitting a list of users matching the search query.
+     */
+    fun searchUsers(string: String): Flow<List<User>> {
+        // Mock data for search
+        return flow {
+            val userList = mutableListOf<User>()
+            userList.add(
+                User(
+                    id = 1,
+                    name = "Shivanand Yadav",
+                    username = "shivanandyadav11",
+                    email = "shivanandyadav12a@gmail.com",
+                    address = Address(
+                        street = "123 Main St",
+                        suite = "Apt 101",
+                        city = "Springfield",
+                        zipcode = "12345",
+                        geo = Geo(
+                            lat = "0",
+                            lng = "0"
+                        )
+                    )
+                )
+            )
+            emit(userList)
+        }
     }
 }
 
